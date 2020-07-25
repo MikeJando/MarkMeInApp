@@ -10,7 +10,7 @@ public class DBUtility
         Connection con;
 
         //Class.forName("com.mysql.cj.jdbc.Driver");
-        con = DriverManager.getConnection("jdbc:mysql://192.168.1.235:3306/mmi?useSSL=false","msjando","Tuesday8");
+        con = DriverManager.getConnection("jdbc:mysql://192.168.1.235:3306/mmi","msjando","Tuesday8");
 
         return con;
     }
