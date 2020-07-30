@@ -1,10 +1,10 @@
 package com.example.mmi;
 
-public class ClassListItems
+public class Classes
 {
     public String name; //Name
 
-    public ClassListItems(String name)
+    public Classes(String name)
     {
 
         this.name = name;

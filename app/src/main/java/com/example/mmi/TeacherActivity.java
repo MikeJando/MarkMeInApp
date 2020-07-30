@@ -22,7 +22,7 @@ public class TeacherActivity extends AppCompatActivity
 {
     private boolean success = false;
     private ListView listView;
-    private ArrayList<ClassListItems> itemArrayList;
+    private ArrayList<Classes> itemArrayList;
     private MyAppAdapter myAppAdapter;
 
     @Override
@@ -30,8 +30,8 @@ public class TeacherActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_teacher);
 
-        listView = (ListView) findViewById(R.id.listView);
-        itemArrayList = new ArrayList<ClassListItems>();
+        listView = findViewById(R.id.listView);
+        itemArrayList = new ArrayList<Classes>();
 
         Intent intent = getIntent();
 
@@ -46,12 +46,11 @@ public class TeacherActivity extends AppCompatActivity
         @Override
         protected String doInBackground(String... params)
         {
-            String userId = params[0];
             try {
                 Connection con = DBUtility.connect();
-                if (con == null) {
-                    success = false;
-                } else {
+                if (!(con == null))
+                {
+                    String userId = params[0];
                     Statement st = con.createStatement();
                     ResultSet rs = st.executeQuery("SELECT * FROM mmi_classinfo where USERID='"+ userId + "'");
                     if (rs != null)
@@ -59,15 +58,13 @@ public class TeacherActivity extends AppCompatActivity
                         while (rs.next())
                         {
                             try {
-                                itemArrayList.add(new ClassListItems(rs.getString("CLASSNAME")));
+                                itemArrayList.add(new Classes(rs.getString("CLASSNAME")));
                             } catch (Exception ex)
                             {
                                 ex.printStackTrace();
                             }
                         }
                         success = true;
-                    } else {
-                        success = false;
                     }
                 }
             } catch (Exception e)
@@ -80,12 +77,15 @@ public class TeacherActivity extends AppCompatActivity
         @Override
         protected void onPostExecute(String msg)
         {
-            if (!success) {
+            if(!success)
+            {
             } else {
                 try {
                     myAppAdapter = new MyAppAdapter(itemArrayList, TeacherActivity.this);
                     listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
                     listView.setAdapter(myAppAdapter);
+                    listView.setOnItemClickListener((parent, view, position, id) -> Toast.makeText(TeacherActivity.this,
+                            "Testing this Toast "+ myAppAdapter.getItem(position), Toast.LENGTH_SHORT).show());
                 } catch (Exception ex)
                 {
                 }
@@ -99,15 +99,15 @@ public class TeacherActivity extends AppCompatActivity
             TextView textName;
         }
 
-        public List<ClassListItems> parkingList;
+        public List<Classes> parkingList;
 
         public Context context;
-        ArrayList<ClassListItems> arraylist;
+        ArrayList<Classes> arraylist;
 
-        private MyAppAdapter(List<ClassListItems> apps, Context context) {
+        private MyAppAdapter(List<Classes> apps, Context context) {
             this.parkingList = apps;
             this.context = context;
-            arraylist = new ArrayList<ClassListItems>();
+            arraylist = new ArrayList<Classes>();
             arraylist.addAll(parkingList);
         }
 
