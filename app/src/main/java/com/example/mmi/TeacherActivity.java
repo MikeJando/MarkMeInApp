@@ -8,13 +8,15 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,7 +60,13 @@ public class TeacherActivity extends AppCompatActivity
                         while (rs.next())
                         {
                             try {
-                                itemArrayList.add(new Classes(rs.getString("CLASSNAME")));
+
+                                LocalDate today = LocalDate.now();
+                                LocalDate start = LocalDate.parse(rs.getString("STARTDATE"));
+                                LocalDate end = LocalDate.parse(rs.getString("ENDDATE"));
+
+                                if(today.isAfter(start) && today.isBefore(end))
+                                    itemArrayList.add(new Classes(rs.getString("CLASSNAME"),rs.getString("CLASSID")));
                             } catch (Exception ex)
                             {
                                 ex.printStackTrace();
@@ -84,8 +92,16 @@ public class TeacherActivity extends AppCompatActivity
                     myAppAdapter = new MyAppAdapter(itemArrayList, TeacherActivity.this);
                     listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
                     listView.setAdapter(myAppAdapter);
-                    listView.setOnItemClickListener((parent, view, position, id) -> Toast.makeText(TeacherActivity.this,
-                            "Testing this Toast "+ myAppAdapter.getItem(position), Toast.LENGTH_SHORT).show());
+                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapter, View view, int position, long id)
+                        {
+                            Intent classListIntent = new Intent(TeacherActivity.this, ClassListActivity.class);
+                            classListIntent.putExtra("name",itemArrayList.get(position).getName());
+                            classListIntent.putExtra("classID",itemArrayList.get(position).getClassID());
+                            startActivity(classListIntent);
+                        }
+                    });
                 } catch (Exception ex)
                 {
                 }
