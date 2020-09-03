@@ -1,7 +1,6 @@
 package com.example.mmi;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -13,11 +12,9 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +22,7 @@ public class ClassListActivity extends AppCompatActivity
 {
     private boolean success = false;
     private ListView listView;
-    private ArrayList<Classes> itemArrayList;
+    private ArrayList<Meetings> itemArrayList;
     private ClassListActivity.MyAppAdapter myAppAdapter;
 
     @Override
@@ -35,7 +32,7 @@ public class ClassListActivity extends AppCompatActivity
 
 
         listView = findViewById(R.id.listView);
-        itemArrayList = new ArrayList<Classes>();
+        itemArrayList = new ArrayList<Meetings>();
         TextView tv;
         tv = findViewById(R.id.Textvv);
 
@@ -60,13 +57,13 @@ public class ClassListActivity extends AppCompatActivity
                 {
                     String classID = params[0];
                     Statement st = con.createStatement();
-                    ResultSet rs = st.executeQuery("SELECT * FROM mmi_classdetails where CLASSID='"+ classID + "'");
+                    ResultSet rs = st.executeQuery("SELECT * FROM mmi_classmeetings where CLASSID='"+ classID + "'");
                     if (rs != null)
                     {
                         while (rs.next())
                         {
                             try {
-                                itemArrayList.add(new Classes(rs.getString("CLASSDATE"),rs.getString("CLASSID")));
+                                itemArrayList.add(new Meetings(rs.getString("CLASSDATE")));
                             } catch (Exception ex)
                             {
                                 ex.printStackTrace();
@@ -96,7 +93,9 @@ public class ClassListActivity extends AppCompatActivity
                         @Override
                         public void onItemClick(AdapterView<?> adapter, View view, int position, long id)
                         {
-
+                            Intent attendanceListIntent = new Intent(ClassListActivity.this, AttendanceListActivity.class);
+                            attendanceListIntent.putExtra("classDate",itemArrayList.get(position).getClassDate());
+                            startActivity(attendanceListIntent);
                         }
                     });
                 } catch (Exception ex)
@@ -112,15 +111,15 @@ public class ClassListActivity extends AppCompatActivity
             TextView textName;
         }
 
-        public List<Classes> parkingList;
+        public List<Meetings> parkingList;
 
         public Context context;
-        ArrayList<Classes> arraylist;
+        ArrayList<Meetings> arraylist;
 
-        private MyAppAdapter(List<Classes> apps, Context context) {
+        private MyAppAdapter(List<Meetings> apps, Context context) {
             this.parkingList = apps;
             this.context = context;
-            arraylist = new ArrayList<Classes>();
+            arraylist = new ArrayList<Meetings>();
             arraylist.addAll(parkingList);
         }
 
@@ -153,7 +152,7 @@ public class ClassListActivity extends AppCompatActivity
             } else {
                 viewHolder = (ClassListActivity.MyAppAdapter.ViewHolder) convertView.getTag();
             }
-            viewHolder.textName.setText(parkingList.get(position).getName() + "");
+            viewHolder.textName.setText(parkingList.get(position).getClassDate() + "");
             return rowView;
         }
     }
