@@ -63,7 +63,7 @@ public class ClassListActivity extends AppCompatActivity
                         while (rs.next())
                         {
                             try {
-                                itemArrayList.add(new Meetings(rs.getString("CLASSDATE")));
+                                itemArrayList.add(new Meetings(rs.getString("CLASSDATE"), rs.getString("CLASSID")));
                             } catch (Exception ex)
                             {
                                 ex.printStackTrace();
@@ -95,6 +95,7 @@ public class ClassListActivity extends AppCompatActivity
                         {
                             Intent attendanceListIntent = new Intent(ClassListActivity.this, AttendanceListActivity.class);
                             attendanceListIntent.putExtra("classDate",itemArrayList.get(position).getClassDate());
+                            attendanceListIntent.putExtra("classID",itemArrayList.get(position).getClassID());
                             startActivity(attendanceListIntent);
                         }
                     });
