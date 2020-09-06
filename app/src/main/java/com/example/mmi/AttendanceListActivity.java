@@ -20,7 +20,7 @@ import java.util.Map;
 public class AttendanceListActivity extends AppCompatActivity {
 
     private HashMap<String, String> attendanceMap = new HashMap<String, String>();
-    private ArrayList<String> studentArray;
+    private ArrayList<String> studentArray = new ArrayList<String>();
     //private attendanceList<Map.Entry
 
 
