@@ -5,15 +5,23 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 
 public class AttendanceListActivity extends AppCompatActivity {
+
+    private HashMap<String, String> attendanceMap = new HashMap<String, String>();
+    private ArrayList<String> studentArray;
+    //private attendanceList<Map.Entry
 
 
     @Override
@@ -50,15 +58,28 @@ public class AttendanceListActivity extends AppCompatActivity {
                             while(rs.next()) {
                                 attendanceList = rs.getString("ATTENDANCELIST");
                                 JSONObject attendance = new JSONObject(attendanceList);
-                                System.out.println(attendance);
+                                Iterator<?> keys = attendance.keys();
+                                while(keys.hasNext())
+                                {
+                                    String key = (String)keys.next();
+                                    String value = attendance.getString(key);
+                                    attendanceMap.put(key, value);
+                                }
                             }
                             ResultSet rs2 = st.executeQuery("SELECT STUDENTLIST FROM mmi_classinfo where CLASSID='" + classID + "'");
                             while(rs2.next())
                             {
                                 studentList = rs2.getString("STUDENTLIST");
                                 JSONObject student = new JSONObject(studentList);
-                                System.out.println(student);
+                                JSONArray jArray = student.getJSONArray("student");
+                                for(int i = 0; i< jArray.length();i++)
+                                {
+                                    studentArray.add(jArray.getString(i));
+                                }
                             }
+
+
+
                     } catch(Exception e)
                     {
                         e.printStackTrace();
