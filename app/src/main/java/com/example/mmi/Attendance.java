@@ -3,19 +3,23 @@ package com.example.mmi;
 public class Attendance
 {
     public String id;
+    public String name;
     public String late;
     public String note;
     public String present;
 
-    public Attendance(String id, String late, String note,String present)
+    public Attendance(String id, String name, String late, String note,String present)
     {
         this.id = id;
+        this.name = name;
         this.late = late;
         this.note = note;
         this.present = present;
     }
 
     public String getId() { return id; }
+
+    public String getName() { return name; }
 
     public String getLate() { return late; }
 

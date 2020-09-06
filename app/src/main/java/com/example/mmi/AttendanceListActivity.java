@@ -1,6 +1,5 @@
 package com.example.mmi;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -12,7 +11,6 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.sql.Connection;
@@ -22,12 +20,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 public class AttendanceListActivity extends AppCompatActivity {
 
     private HashMap<String, HashMap<String, String>> attendanceMap = new HashMap<>();
-    private ArrayList<String> studentArray = new ArrayList<>();
+    private HashMap<String,String> studentMap = new HashMap<>();
     private boolean success = false;
     private ListView listView;
     private ArrayList<Attendance> itemArrayList;
@@ -90,19 +90,17 @@ public class AttendanceListActivity extends AppCompatActivity {
                             {
                                 studentList = rs2.getString("STUDENTLIST");
                                 JSONObject student = new JSONObject(studentList);
-                                JSONArray jArray = student.getJSONArray("student");
-                                for(int i = 0; i< jArray.length();i++)
+                                Iterator<?> keys3 = student.keys();
+                                while(keys3.hasNext())
                                 {
-                                    studentArray.add(jArray.getString(i));
+                                    String key = (String)keys3.next();
+                                    String value = student.getString(key);
+                                    studentMap.put(key,value);
+                                    String late = (String)attendanceMap.get(key).get("late");
+                                    String note = (String)attendanceMap.get(key).get("note");
+                                    String present = (String)attendanceMap.get(key).get("present");
+                                    itemArrayList.add(new Attendance(key, value, late, note, present));
                                 }
-                            }
-                            for(int i = 0; i<studentArray.size();i++)
-                            {
-                                String id = studentArray.get(i);
-                                String late = (String)attendanceMap.get(id).get("late");
-                                String note = (String)attendanceMap.get(id).get("note");
-                                String present = (String)attendanceMap.get(id).get("present");
-                                itemArrayList.add(new Attendance(id, late, note, present));
                             }
                             success = true;
                     } catch(Exception e)
@@ -187,7 +185,7 @@ public class AttendanceListActivity extends AppCompatActivity {
             } else {
                 viewHolder = (AttendanceListActivity.MyAppAdapter.ViewHolder) convertView.getTag();
             }
-            viewHolder.textName.setText(parkingList.get(position).getId() + "");
+            viewHolder.textName.setText(parkingList.get(position).getName() + "");
             return rowView;
         }
     }
