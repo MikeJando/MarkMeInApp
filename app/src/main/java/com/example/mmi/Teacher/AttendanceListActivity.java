@@ -33,6 +33,8 @@ public class AttendanceListActivity extends AppCompatActivity {
     private ListView listView;
     private ArrayList<Attendance> itemArrayList;
     private AttendanceListActivity.MyAppAdapter myAppAdapter;
+    private String cDate;
+    private String cID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +46,8 @@ public class AttendanceListActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        String cDate = intent.getStringExtra("classDate");
-        String cID = intent.getStringExtra("classID");
+        cDate = intent.getStringExtra("classDate");
+        cID = intent.getStringExtra("classID");
 
         SyncData orderData = new SyncData();
         orderData.execute(cDate, cID);
@@ -130,6 +132,15 @@ public class AttendanceListActivity extends AppCompatActivity {
                         @Override
                         public void onItemClick(AdapterView<?> adapter, View view, int position, long id)
                         {
+                            Intent attendanceDetailIntent = new Intent(AttendanceListActivity.this, AttendanceDetailActivity.class);
+                            attendanceDetailIntent.putExtra("id",itemArrayList.get(position).getId());
+                            attendanceDetailIntent.putExtra("name",itemArrayList.get(position).getName());
+                            attendanceDetailIntent.putExtra("late",itemArrayList.get(position).getLate());
+                            attendanceDetailIntent.putExtra("note",itemArrayList.get(position).getNote());
+                            attendanceDetailIntent.putExtra("present",itemArrayList.get(position).getPresent());
+                            attendanceDetailIntent.putExtra("cDate", cDate);
+                            attendanceDetailIntent.putExtra("cID", cID);
+                            startActivity(attendanceDetailIntent);
                         }
                     });
                 } catch (Exception ex)
