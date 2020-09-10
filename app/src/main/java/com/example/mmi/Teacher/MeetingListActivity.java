@@ -1,4 +1,4 @@
-package com.example.mmi;
+package com.example.mmi.Teacher;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
@@ -12,18 +12,22 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.example.mmi.DBUtility;
+import com.example.mmi.R;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClassListActivity extends AppCompatActivity
+public class MeetingListActivity extends AppCompatActivity
 {
     private boolean success = false;
     private ListView listView;
     private ArrayList<Meetings> itemArrayList;
-    private ClassListActivity.MyAppAdapter myAppAdapter;
+    private MeetingListActivity.MyAppAdapter myAppAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,14 +90,14 @@ public class ClassListActivity extends AppCompatActivity
             {
             } else {
                 try {
-                    myAppAdapter = new ClassListActivity.MyAppAdapter(itemArrayList, ClassListActivity.this);
+                    myAppAdapter = new MeetingListActivity.MyAppAdapter(itemArrayList, MeetingListActivity.this);
                     listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
                     listView.setAdapter(myAppAdapter);
                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> adapter, View view, int position, long id)
                         {
-                            Intent attendanceListIntent = new Intent(ClassListActivity.this, AttendanceListActivity.class);
+                            Intent attendanceListIntent = new Intent(MeetingListActivity.this, AttendanceListActivity.class);
                             attendanceListIntent.putExtra("classDate",itemArrayList.get(position).getClassDate());
                             attendanceListIntent.putExtra("classID",itemArrayList.get(position).getClassID());
                             startActivity(attendanceListIntent);
@@ -143,15 +147,15 @@ public class ClassListActivity extends AppCompatActivity
         public View getView(final int position, View convertView, ViewGroup parent)
         {
             View rowView = convertView;
-            ClassListActivity.MyAppAdapter.ViewHolder viewHolder = null;
+            MeetingListActivity.MyAppAdapter.ViewHolder viewHolder = null;
             if (rowView == null) {
                 LayoutInflater inflater = getLayoutInflater();
                 rowView = inflater.inflate(R.layout.list_content, parent, false);
-                viewHolder = new ClassListActivity.MyAppAdapter.ViewHolder();
+                viewHolder = new MeetingListActivity.MyAppAdapter.ViewHolder();
                 viewHolder.textName = (TextView) rowView.findViewById(R.id.textName);
                 rowView.setTag(viewHolder);
             } else {
-                viewHolder = (ClassListActivity.MyAppAdapter.ViewHolder) convertView.getTag();
+                viewHolder = (MeetingListActivity.MyAppAdapter.ViewHolder) convertView.getTag();
             }
             viewHolder.textName.setText(parkingList.get(position).getClassDate() + "");
             return rowView;

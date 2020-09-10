@@ -1,4 +1,4 @@
-package com.example.mmi;
+package com.example.mmi.Teacher;
 
 public class Classes
 {

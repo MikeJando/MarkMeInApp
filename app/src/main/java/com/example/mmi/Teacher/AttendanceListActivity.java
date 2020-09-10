@@ -1,4 +1,4 @@
-package com.example.mmi;
+package com.example.mmi.Teacher;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +11,10 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import org.json.JSONArray;
+
+import com.example.mmi.DBUtility;
+import com.example.mmi.R;
+
 import org.json.JSONObject;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -20,8 +23,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 
 public class AttendanceListActivity extends AppCompatActivity {

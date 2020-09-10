@@ -12,10 +12,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".AttendanceListActivity"></activity>
-        <activity android:name=".ClassListActivity" />
-        <activity android:name=".StudentActivity" />
-        <activity android:name=".TeacherActivity" />
+        <activity android:name=".Teacher.AttendanceListActivity"></activity>
+        <activity android:name=".Teacher.MeetingListActivity" />
+        <activity android:name=".Student.StudentActivity" />
+        <activity android:name=".Teacher.ClassListActivity" />
         <activity android:name=".ForgotActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>

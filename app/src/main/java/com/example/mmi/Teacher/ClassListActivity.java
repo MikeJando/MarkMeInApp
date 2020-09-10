@@ -1,4 +1,4 @@
-package com.example.mmi;
+package com.example.mmi.Teacher;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
@@ -12,6 +12,10 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.example.mmi.DBUtility;
+import com.example.mmi.R;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -19,7 +23,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TeacherActivity extends AppCompatActivity
+public class ClassListActivity extends AppCompatActivity
 {
     private boolean success = false;
     private ListView listView;
@@ -88,14 +92,14 @@ public class TeacherActivity extends AppCompatActivity
             {
             } else {
                 try {
-                    myAppAdapter = new MyAppAdapter(itemArrayList, TeacherActivity.this);
+                    myAppAdapter = new MyAppAdapter(itemArrayList, ClassListActivity.this);
                     listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
                     listView.setAdapter(myAppAdapter);
                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> adapter, View view, int position, long id)
                         {
-                            Intent classListIntent = new Intent(TeacherActivity.this, ClassListActivity.class);
+                            Intent classListIntent = new Intent(ClassListActivity.this, MeetingListActivity.class);
                             classListIntent.putExtra("name",itemArrayList.get(position).getName());
                             classListIntent.putExtra("classID",itemArrayList.get(position).getClassID());
                             startActivity(classListIntent);

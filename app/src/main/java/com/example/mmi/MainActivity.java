@@ -8,6 +8,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.mmi.Student.StudentActivity;
+import com.example.mmi.Teacher.ClassListActivity;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -88,7 +92,7 @@ private class MyTask extends AsyncTask<String, Void, String[]>
     {
         if(userinfo[0] != null) {
             if (userinfo[0].equals("Professor")) {
-                Intent teacherIntent = new Intent(MainActivity.this, TeacherActivity.class);
+                Intent teacherIntent = new Intent(MainActivity.this, ClassListActivity.class);
                 teacherIntent.putExtra("userid",userinfo[1]);
                 startActivity(teacherIntent);
             }
