@@ -2,6 +2,7 @@ package com.example.mmi.Teacher;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -24,11 +25,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-
 public class AttendanceListActivity extends AppCompatActivity {
 
     private HashMap<String, HashMap<String, String>> attendanceMap = new HashMap<>();
-    private HashMap<String,String> studentMap = new HashMap<>();
+    //private HashMap<String,String> studentMap = new HashMap<>();
     private boolean success = false;
     private ListView listView;
     private ArrayList<Attendance> itemArrayList;
@@ -98,7 +98,7 @@ public class AttendanceListActivity extends AppCompatActivity {
                                 {
                                     String key = (String)keys3.next();
                                     String value = student.getString(key);
-                                    studentMap.put(key,value);
+                                    //studentMap.put(key,value);
                                     String late = (String)attendanceMap.get(key).get("late");
                                     String note = (String)attendanceMap.get(key).get("note");
                                     String present = (String)attendanceMap.get(key).get("present");
@@ -198,6 +198,10 @@ public class AttendanceListActivity extends AppCompatActivity {
                 viewHolder = (AttendanceListActivity.MyAppAdapter.ViewHolder) convertView.getTag();
             }
             viewHolder.textName.setText(parkingList.get(position).getName() + "");
+            if(itemArrayList.get(position).getPresent().equals("True"))
+                rowView.setBackgroundColor(Color.parseColor("#00ff00"));
+            else
+                rowView.setBackgroundColor(Color.parseColor("#ff0000"));
             return rowView;
         }
     }
