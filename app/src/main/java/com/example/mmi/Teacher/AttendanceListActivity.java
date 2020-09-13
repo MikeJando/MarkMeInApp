@@ -12,10 +12,8 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.example.mmi.DBUtility;
 import com.example.mmi.R;
-
 import org.json.JSONObject;
 import java.sql.Connection;
 import java.sql.ResultSet;

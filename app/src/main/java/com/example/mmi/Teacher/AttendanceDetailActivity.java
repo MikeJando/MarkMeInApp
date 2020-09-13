@@ -1,19 +1,13 @@
 package com.example.mmi.Teacher;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
-
+import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import com.example.mmi.DBUtility;
 import com.example.mmi.R;
 import org.json.JSONObject;
@@ -34,12 +28,17 @@ public class AttendanceDetailActivity extends AppCompatActivity {
     private String late;
     private String note;
     private String present;
+    RadioGroup radioGroup;
+    RadioButton radioButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_attendance_detail);
         Intent intent = getIntent();
+
+        radioGroup = findViewById(R.id.radioGroup);
 
         classDate = intent.getStringExtra("cDate");
         classID = intent.getStringExtra("cID");
@@ -49,8 +48,22 @@ public class AttendanceDetailActivity extends AppCompatActivity {
         note = intent.getStringExtra("note");
         present = intent.getStringExtra("present");
 
-        SyncData orderData = new SyncData();
-        orderData.execute();
+        Button buttonSubmit = findViewById(R.id.button_submit);
+        buttonSubmit.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                int radioID = radioGroup.getCheckedRadioButtonId();
+                radioButton = findViewById(radioID);
+                String newPresent = (String)radioButton.getText();
+                SyncData orderData = new SyncData();
+                orderData.execute(classDate, newPresent);
+            }
+        });
+
+
+
     }
 
     private class SyncData extends AsyncTask<String, Void, String[]>
@@ -63,7 +76,7 @@ public class AttendanceDetailActivity extends AppCompatActivity {
                 if (!(con == null))
                 {
                     String classDate = params[0];
-                    String classID = params[1];
+                    String newPresent = params[1];
                     String attendanceList;
                     Statement st = con.createStatement();
                     ResultSet rs = st.executeQuery("SELECT ATTENDANCELIST FROM mmi_classmeetings where CLASSDATE='" + classDate + "'");
@@ -87,6 +100,10 @@ public class AttendanceDetailActivity extends AppCompatActivity {
                                 attendanceMap.put(key, values);
                             }
                         }
+                        attendanceMap.get(id).replace("present",newPresent);
+                        JSONObject jsonMap = new JSONObject(attendanceMap);
+                        st.executeUpdate("UPDATE mmi_classmeetings" + " set ATTENDANCELIST='" + jsonMap + "' where CLASSDATE='" + classDate + "'");
+
                     } catch(Exception e)
                     {
                         e.printStackTrace();
@@ -102,6 +119,7 @@ public class AttendanceDetailActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String[] msg)
         {
+
 
         }
     }
