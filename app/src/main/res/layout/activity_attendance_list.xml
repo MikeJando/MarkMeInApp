@@ -21,11 +21,19 @@
         />
 
     <ListView
+        android:id="@+id/listView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerHorizontal="true"
+        android:layout_height="640dp"
         android:layout_below="@+id/Textvv"
+        android:layout_centerHorizontal="true"
         android:clickable="true"
-        android:id="@+id/listView" />
+        android:layout_weight="1.0"/>
+
+    <Button
+        android:id="@+id/button_refresh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Refresh" />
 
 </LinearLayout>

@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.example.mmi.DBUtility;
@@ -35,9 +37,21 @@ public class AttendanceListActivity extends AppCompatActivity {
     private String cID;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_attendance_list);
+
+        Button refresh = findViewById(R.id.button_refresh);
+        refresh.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                finish();
+                startActivity(getIntent());
+            }
+        });
 
         listView = findViewById(R.id.listView);
         itemArrayList = new ArrayList<Attendance>();
@@ -140,13 +154,16 @@ public class AttendanceListActivity extends AppCompatActivity {
                             attendanceDetailIntent.putExtra("cID", cID);
                             startActivity(attendanceDetailIntent);
                         }
+
                     });
+
                 } catch (Exception ex)
                 {
                 }
             }
         }
     }
+
 
     public class MyAppAdapter extends BaseAdapter
     {
