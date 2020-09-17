@@ -68,7 +68,7 @@ public class ClassListActivity extends AppCompatActivity
                                 LocalDate start = LocalDate.parse(rs.getString("STARTDATE"));
                                 LocalDate end = LocalDate.parse(rs.getString("ENDDATE"));
 
-                                if(today.isAfter(start) && today.isBefore(end))
+                                if((!today.isBefore(start)) && (!today.isAfter(end)))
                                     itemArrayList.add(new Classes(rs.getString("CLASSNAME"),rs.getString("CLASSID")));
                             } catch (Exception ex)
                             {

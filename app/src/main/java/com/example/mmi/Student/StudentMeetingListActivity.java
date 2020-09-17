@@ -12,7 +12,6 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.example.mmi.DBUtility;
 import com.example.mmi.R;
 import com.example.mmi.Teacher.Meetings;
@@ -29,11 +28,12 @@ public class StudentMeetingListActivity extends AppCompatActivity
     private ListView listView;
     private ArrayList<Meetings> itemArrayList;
     private MyAppAdapter myAppAdapter;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_class_list);
+        setContentView(R.layout.activity_student_meeting_list);
 
 
         listView = findViewById(R.id.listView);
@@ -45,6 +45,7 @@ public class StudentMeetingListActivity extends AppCompatActivity
 
         String name = intent.getStringExtra("name");
         String classID = intent.getStringExtra("classID");
+        userId = intent.getStringExtra("userId");
         tv.setText(name);
 
         SyncData orderData = new SyncData();
@@ -102,7 +103,10 @@ public class StudentMeetingListActivity extends AppCompatActivity
                         @Override
                         public void onItemClick(AdapterView<?> adapter, View view, int position, long id)
                         {
-
+                            Intent attendanceListIntent = new Intent(StudentMeetingListActivity.this, StudentAttendanceDetailActivity.class);
+                            attendanceListIntent.putExtra("classDate",itemArrayList.get(position).getClassDate());
+                            attendanceListIntent.putExtra("userId",userId);
+                            startActivity(attendanceListIntent);
                         }
                     });
                 } catch (Exception ex)

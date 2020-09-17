@@ -30,18 +30,19 @@ public class StudentClassListActivity extends AppCompatActivity
     private ListView listView;
     private ArrayList<Classes> itemArrayList;
     private MyAppAdapter myAppAdapter;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_teacher);
+        setContentView(R.layout.activity_student_class_list);
 
         listView = findViewById(R.id.listView);
         itemArrayList = new ArrayList<Classes>();
 
         Intent intent = getIntent();
 
-        String userId = intent.getStringExtra("userid");
+        userId = intent.getStringExtra("userid");
         String classString = intent.getStringExtra("classList");
 
         SyncData orderData = new SyncData();
@@ -103,6 +104,7 @@ public class StudentClassListActivity extends AppCompatActivity
                         public void onItemClick(AdapterView<?> adapter, View view, int position, long id)
                         {
                             Intent classListIntent = new Intent(StudentClassListActivity.this, StudentMeetingListActivity.class);
+                            classListIntent.putExtra("userId",userId);
                             classListIntent.putExtra("name",itemArrayList.get(position).getName());
                             classListIntent.putExtra("classID",itemArrayList.get(position).getClassID());
                             startActivity(classListIntent);
