@@ -9,10 +9,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.mmi.Student.StudentActivity;
+import com.example.mmi.Student.StudentClassListActivity;
 import com.example.mmi.Teacher.ClassListActivity;
-
-import org.json.JSONObject;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

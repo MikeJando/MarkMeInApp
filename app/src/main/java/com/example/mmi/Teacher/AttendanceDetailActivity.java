@@ -41,8 +41,6 @@ public class AttendanceDetailActivity extends AppCompatActivity {
     private EditText newNotes;
     private Boolean presentLate = true;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -160,7 +158,6 @@ public class AttendanceDetailActivity extends AppCompatActivity {
             }
             return null;
         }
-
 
         @Override
         protected void onPostExecute(String[] msg)

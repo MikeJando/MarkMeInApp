@@ -1,4 +1,4 @@
-package com.example.mmi;
+package com.example.mmi.Student;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
@@ -12,8 +12,10 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import com.example.mmi.Teacher.Classes;
-import org.json.JSONObject;
+
+import com.example.mmi.DBUtility;
+import com.example.mmi.R;
+import com.example.mmi.Teacher.Meetings;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -21,28 +23,32 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StudentClassListActivity extends AppCompatActivity
+public class StudentMeetingListActivity extends AppCompatActivity
 {
     private boolean success = false;
     private ListView listView;
-    private ArrayList<Classes> itemArrayList;
+    private ArrayList<Meetings> itemArrayList;
     private MyAppAdapter myAppAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_teacher);
+        setContentView(R.layout.activity_class_list);
+
 
         listView = findViewById(R.id.listView);
-        itemArrayList = new ArrayList<Classes>();
+        itemArrayList = new ArrayList<Meetings>();
+        TextView tv;
+        tv = findViewById(R.id.Textvv);
 
         Intent intent = getIntent();
 
-        String userId = intent.getStringExtra("userid");
-        String classString = intent.getStringExtra("classList");
+        String name = intent.getStringExtra("name");
+        String classID = intent.getStringExtra("classID");
+        tv.setText(name);
 
         SyncData orderData = new SyncData();
-        orderData.execute(userId, classString);
+        orderData.execute(classID);
     }
 
     private class SyncData extends AsyncTask<String, Void, String>
@@ -52,30 +58,27 @@ public class StudentClassListActivity extends AppCompatActivity
         {
             try {
                 Connection con = DBUtility.connect();
-                if (!(con == null)) {
-                    JSONObject classJson = new JSONObject(params[1]);
-                    String[] classArr = classJson.getString("id").split(",");
-                    for (int i = 0; i < classArr.length; i++)
+                if (!(con == null))
+                {
+                    String classID = params[0];
+                    Statement st = con.createStatement();
+                    ResultSet rs = st.executeQuery("SELECT * FROM mmi_classmeetings where CLASSID='"+ classID + "'");
+                    if (rs != null)
                     {
-                        String classId = classArr[i];
-                        Statement st = con.createStatement();
-                        ResultSet rs = st.executeQuery("SELECT * FROM mmi_classinfo where CLASSID='" + classId + "'");
-                        if (rs != null) {
-                            while (rs.next()) {
-                                try {
+                        while (rs.next())
+                        {
+                            try {
+                                LocalDate today = LocalDate.now();
+                                LocalDate cDate = LocalDate.parse(rs.getString("CLASSDATE"));
 
-                                    LocalDate today = LocalDate.now();
-                                    LocalDate start = LocalDate.parse(rs.getString("STARTDATE"));
-                                    LocalDate end = LocalDate.parse(rs.getString("ENDDATE"));
-
-                                    if (today.isAfter(start) && today.isBefore(end))
-                                        itemArrayList.add(new Classes(rs.getString("CLASSNAME"), rs.getString("CLASSID")));
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
-                                }
+                                if(!today.isBefore(cDate))
+                                    itemArrayList.add(new Meetings(rs.getString("CLASSDATE"), rs.getString("CLASSID")));
+                            } catch (Exception ex)
+                            {
+                                ex.printStackTrace();
                             }
-                            success = true;
                         }
+                        success = true;
                     }
                 }
             } catch (Exception e)
@@ -92,17 +95,14 @@ public class StudentClassListActivity extends AppCompatActivity
             {
             } else {
                 try {
-                    myAppAdapter = new MyAppAdapter(itemArrayList, StudentClassListActivity.this);
+                    myAppAdapter = new MyAppAdapter(itemArrayList, StudentMeetingListActivity.this);
                     listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
                     listView.setAdapter(myAppAdapter);
                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> adapter, View view, int position, long id)
                         {
-                            Intent classListIntent = new Intent(StudentClassListActivity.this, StudentMeetingListActivity.class);
-                            classListIntent.putExtra("name",itemArrayList.get(position).getName());
-                            classListIntent.putExtra("classID",itemArrayList.get(position).getClassID());
-                            startActivity(classListIntent);
+
                         }
                     });
                 } catch (Exception ex)
@@ -118,15 +118,15 @@ public class StudentClassListActivity extends AppCompatActivity
             TextView textName;
         }
 
-        public List<Classes> parkingList;
+        public List<Meetings> parkingList;
 
         public Context context;
-        ArrayList<Classes> arraylist;
+        ArrayList<Meetings> arraylist;
 
-        private MyAppAdapter(List<Classes> apps, Context context) {
+        private MyAppAdapter(List<Meetings> apps, Context context) {
             this.parkingList = apps;
             this.context = context;
-            arraylist = new ArrayList<Classes>();
+            arraylist = new ArrayList<Meetings>();
             arraylist.addAll(parkingList);
         }
 
@@ -149,17 +149,17 @@ public class StudentClassListActivity extends AppCompatActivity
         public View getView(final int position, View convertView, ViewGroup parent)
         {
             View rowView = convertView;
-            StudentClassListActivity.MyAppAdapter.ViewHolder viewHolder = null;
+            MyAppAdapter.ViewHolder viewHolder = null;
             if (rowView == null) {
                 LayoutInflater inflater = getLayoutInflater();
                 rowView = inflater.inflate(R.layout.list_content, parent, false);
-                viewHolder = new StudentClassListActivity.MyAppAdapter.ViewHolder();
+                viewHolder = new MyAppAdapter.ViewHolder();
                 viewHolder.textName = (TextView) rowView.findViewById(R.id.textName);
                 rowView.setTag(viewHolder);
             } else {
-                viewHolder = (StudentClassListActivity.MyAppAdapter.ViewHolder) convertView.getTag();
+                viewHolder = (MyAppAdapter.ViewHolder) convertView.getTag();
             }
-            viewHolder.textName.setText(parkingList.get(position).getName() + "");
+            viewHolder.textName.setText(parkingList.get(position).getClassDate() + "");
             return rowView;
         }
     }
