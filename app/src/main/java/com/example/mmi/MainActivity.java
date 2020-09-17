@@ -12,6 +12,8 @@ import android.widget.Toast;
 import com.example.mmi.Student.StudentActivity;
 import com.example.mmi.Teacher.ClassListActivity;
 
+import org.json.JSONObject;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -59,7 +61,7 @@ private class MyTask extends AsyncTask<String, Void, String[]>
 
     Boolean statement = false;
 
-    String[] data = new String[2];
+    String[] data = new String[3];
     @Override
     protected String[] doInBackground(String... params)
     {
@@ -78,6 +80,7 @@ private class MyTask extends AsyncTask<String, Void, String[]>
                 statement = true;
                 data[0] = rs.getString("DESIGNATION");
                 data[1] = rs.getString("USERID");
+                data[2] = rs.getString("CLASSDATA");
             }
         }catch(Exception e)
         {
@@ -97,7 +100,9 @@ private class MyTask extends AsyncTask<String, Void, String[]>
                 startActivity(teacherIntent);
             }
             else if (userinfo[0].equals("Student")) {
-                Intent studentIntent = new Intent(MainActivity.this, StudentActivity.class);
+                Intent studentIntent = new Intent(MainActivity.this, StudentClassListActivity.class);
+                studentIntent.putExtra("userid",userinfo[1]);
+                studentIntent.putExtra("classList",userinfo[2]);
                 startActivity(studentIntent);
             }
             else
