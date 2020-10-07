@@ -260,8 +260,7 @@ public class AttendanceListActivity extends AppCompatActivity {
                 viewHolder = (AttendanceListActivity.MyAppAdapter.ViewHolder) convertView.getTag();
             }
             viewHolder.textName.setText(parkingList.get(position).getName() + "");
-            if(itemArrayList.get(position).getPresent().equals("true" +
-                    ""))
+            if(itemArrayList.get(position).getPresent().equals("true" + ""))
                 rowView.setBackgroundColor(Color.parseColor("#00ff00"));
             else
                 rowView.setBackgroundColor(Color.parseColor("#ff0000"));

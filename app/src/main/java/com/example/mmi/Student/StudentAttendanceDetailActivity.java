@@ -124,7 +124,7 @@ public class StudentAttendanceDetailActivity extends AppCompatActivity {
                             attendanceMap.put(userId, values);
                         }
 
-                        if(connect.equals("True") && attendanceMap.get(userId).get("present").equals("False")) {
+                        if(connect.equals("true") && attendanceMap.get(userId).get("present").equals("False")) {
                             attendanceMap.get(userId).replace("present", "True");
                             String jsonMap = "JSON_REPLACE(ATTENDANCELIST, '$."+userId+"', True" ;
                             st.executeUpdate("UPDATE mmi_classmeetings" + " set ATTENDANCELIST='" + jsonMap + "' where CLASSDATE='" + classDate + "'");
@@ -142,7 +142,7 @@ public class StudentAttendanceDetailActivity extends AppCompatActivity {
                             presentText.setText("No");
                             presentText.setTextColor(Color.parseColor("#ff0000"));
                         }
-                        if(late.equals("True"))
+                        if(late.equals("true"))
                         {
                             lateText.setText("Yes");
                             lateText.setTextColor(Color.parseColor("#00ff00"));
