@@ -8,10 +8,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.mmi.Student.StudentClassListActivity;
 import com.example.mmi.Teacher.ClassListActivity;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;

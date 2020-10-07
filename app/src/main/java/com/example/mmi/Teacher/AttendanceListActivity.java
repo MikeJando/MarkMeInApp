@@ -1,21 +1,40 @@
 package com.example.mmi.Teacher;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.example.mmi.DBUtility;
 import com.example.mmi.R;
+import com.google.android.gms.nearby.Nearby;
+import com.google.android.gms.nearby.connection.AdvertisingOptions;
+import com.google.android.gms.nearby.connection.ConnectionInfo;
+import com.google.android.gms.nearby.connection.ConnectionLifecycleCallback;
+import com.google.android.gms.nearby.connection.ConnectionResolution;
+import com.google.android.gms.nearby.connection.ConnectionsClient;
+import com.google.android.gms.nearby.connection.ConnectionsStatusCodes;
+import com.google.android.gms.nearby.connection.Payload;
+import com.google.android.gms.nearby.connection.PayloadCallback;
+import com.google.android.gms.nearby.connection.PayloadTransferUpdate;
+import com.google.android.gms.nearby.connection.Strategy;
 import org.json.JSONObject;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -28,7 +47,6 @@ import java.util.List;
 public class AttendanceListActivity extends AppCompatActivity {
 
     private HashMap<String, HashMap<String, String>> attendanceMap = new HashMap<>();
-    //private HashMap<String,String> studentMap = new HashMap<>();
     private boolean success = false;
     private ListView listView;
     private ArrayList<Attendance> itemArrayList;
@@ -36,11 +54,28 @@ public class AttendanceListActivity extends AppCompatActivity {
     private String cDate;
     private String cID;
 
+    private ConnectionsClient connectionsClient;
+    private static final String TAG = "MMI";
+
+    private static final String[] REQUIRED_PERMISSIONS =
+            new String[] {
+                    Manifest.permission.BLUETOOTH,
+                    Manifest.permission.BLUETOOTH_ADMIN,
+                    Manifest.permission.ACCESS_WIFI_STATE,
+                    Manifest.permission.CHANGE_WIFI_STATE,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+            };
+
+    private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_attendance_list);
+
+        connectionsClient = Nearby.getConnectionsClient(this);
 
         Button refresh = findViewById(R.id.button_refresh);
         refresh.setOnClickListener(new View.OnClickListener()
@@ -50,6 +85,20 @@ public class AttendanceListActivity extends AppCompatActivity {
             {
                 finish();
                 startActivity(getIntent());
+            }
+        });
+
+        Button attendance = findViewById(R.id.button_attendance);
+        attendance.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                if (!hasPermissions(AttendanceListActivity.this, REQUIRED_PERMISSIONS)) {
+                    requestPermissions(REQUIRED_PERMISSIONS, REQUEST_CODE_REQUIRED_PERMISSIONS);
+                }
+                toastMsg("Taking Attendance");
+                startAdvertising();
             }
         });
 
@@ -110,7 +159,6 @@ public class AttendanceListActivity extends AppCompatActivity {
                                 {
                                     String key = (String)keys3.next();
                                     String value = student.getString(key);
-                                    //studentMap.put(key,value);
                                     String late = (String)attendanceMap.get(key).get("late");
                                     String note = (String)attendanceMap.get(key).get("note");
                                     String present = (String)attendanceMap.get(key).get("present");
@@ -164,7 +212,6 @@ public class AttendanceListActivity extends AppCompatActivity {
         }
     }
 
-
     public class MyAppAdapter extends BaseAdapter
     {
         public class ViewHolder {
@@ -213,11 +260,94 @@ public class AttendanceListActivity extends AppCompatActivity {
                 viewHolder = (AttendanceListActivity.MyAppAdapter.ViewHolder) convertView.getTag();
             }
             viewHolder.textName.setText(parkingList.get(position).getName() + "");
-            if(itemArrayList.get(position).getPresent().equals("True"))
+            if(itemArrayList.get(position).getPresent().equals("true" +
+                    ""))
                 rowView.setBackgroundColor(Color.parseColor("#00ff00"));
             else
                 rowView.setBackgroundColor(Color.parseColor("#ff0000"));
             return rowView;
         }
+    }
+
+    private void startAdvertising() {
+        connectionsClient.startAdvertising(
+                "Teacher Device", getPackageName(), connectionLifecycleCallback,
+                new AdvertisingOptions.Builder().setStrategy(Strategy.P2P_STAR).build());
+    }
+
+    private final PayloadCallback payloadCallback =
+            new PayloadCallback() {
+                @Override
+                public void onPayloadReceived(String endpointId, Payload payload) {
+                }
+
+                @Override
+                public void onPayloadTransferUpdate(String endpointId, PayloadTransferUpdate update) {
+                }
+            };
+
+    private final ConnectionLifecycleCallback connectionLifecycleCallback =
+            new ConnectionLifecycleCallback() {
+                @Override
+                public void onConnectionInitiated(String endpointId, ConnectionInfo connectionInfo) {
+                    Log.i(TAG, "onConnectionInitiated: accepting connection");
+                    connectionsClient.acceptConnection(endpointId, payloadCallback);
+
+                }
+
+                @Override
+                public void onConnectionResult(String endpointId, ConnectionResolution result) {
+                    switch (result.getStatus().getStatusCode()) {
+                        case ConnectionsStatusCodes.STATUS_OK:
+                            break;
+                        case ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED:
+                            break;
+                        case ConnectionsStatusCodes.STATUS_ERROR:
+                            break;
+                        default:
+                    }
+                }
+
+                @Override
+                public void onDisconnected(String endpointId) {
+                    // We've been disconnected from this endpoint. No more data can be
+                    // sent or received.
+                }
+            };
+
+    private static boolean hasPermissions(Context context, String... permissions) {
+        for (String permission : permissions) {
+            if (ContextCompat.checkSelfPermission(context, permission)
+                    != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /** Handles user acceptance (or denial) of our permission request. */
+    @CallSuper
+    @Override
+    public void onRequestPermissionsResult(
+            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode != REQUEST_CODE_REQUIRED_PERMISSIONS) {
+            return;
+        }
+
+        for (int grantResult : grantResults) {
+            if (grantResult == PackageManager.PERMISSION_DENIED) {
+                toastMsg("Missing Permissions");
+                finish();
+                return;
+            }
+        }
+        recreate();
+    }
+
+    public void toastMsg(String msg) {
+        Toast toast = Toast.makeText(this, msg, Toast.LENGTH_LONG);
+        toast.show();
     }
 }

@@ -64,12 +64,12 @@ public class AttendanceDetailActivity extends AppCompatActivity {
         newNotes.setText(note);
         OnTaskCompleteListener listener = message -> Toast.makeText(AttendanceDetailActivity.this, message, Toast.LENGTH_SHORT).show();
 
-        if(present.equals("True"))
+        if(present.equals("true"))
             true1.setChecked(true);
         else
             false1.setChecked(true);
 
-        if(late.equals("True"))
+        if(late.equals("true"))
             true2.setChecked(true);
         else
             false2.setChecked(true);
@@ -88,8 +88,10 @@ public class AttendanceDetailActivity extends AppCompatActivity {
                 radioButton2 = findViewById(radioID2);
                 String newLate = (String)radioButton2.getText();
 
+                String updatedNotes = newNotes.getText().toString().trim();
+
                 SyncData orderData = new SyncData(listener);
-                orderData.execute(classDate, newPresent, newLate);
+                orderData.execute(classDate, newPresent, newLate, updatedNotes);
             }
         });
     }
@@ -111,6 +113,7 @@ public class AttendanceDetailActivity extends AppCompatActivity {
                     String classDate = params[0];
                     String newPresent = params[1];
                     String newLate = params[2];
+                    String updatedNotes = params[3];
                     String attendanceList;
                     Statement st = con.createStatement();
                     ResultSet rs = st.executeQuery("SELECT ATTENDANCELIST FROM mmi_classmeetings where CLASSDATE='" + classDate + "'");
@@ -140,8 +143,16 @@ public class AttendanceDetailActivity extends AppCompatActivity {
                             attendanceMap.get(id).replace("late", newLate);
                             attendanceMap.get(id).replace("note", newNotes.getText().toString().trim());
 
+
+
                             JSONObject jsonMap = new JSONObject(attendanceMap);
-                            st.executeUpdate("UPDATE mmi_classmeetings" + " set ATTENDANCELIST='" + jsonMap + "' where CLASSDATE='" + classDate + "'");
+                            //st.executeUpdate("UPDATE mmi_classmeetings" + " set ATTENDANCELIST='" + jsonMap + "' where CLASSDATE='" + classDate + "'");
+
+                            st.executeUpdate("UPDATE mmi_classmeetings set ATTENDANCELIST= JSON_SET(ATTENDANCELIST, '$."+'"'+id+'"'+".present', "+newPresent+") where CLASSDATE='"+classDate+"'");
+
+                            st.executeUpdate("UPDATE mmi_classmeetings set ATTENDANCELIST= JSON_SET(ATTENDANCELIST, '$."+'"'+id+'"'+".late', "+newLate+") where CLASSDATE='"+classDate+"'");
+
+                            st.executeUpdate("UPDATE mmi_classmeetings set ATTENDANCELIST= JSON_SET(ATTENDANCELIST, '$."+'"'+id+'"'+".note', "+'"'+updatedNotes+'"'+") where CLASSDATE='"+classDate+"'");
                         }
                         else {
                             presentLate = false;
