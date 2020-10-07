@@ -12,17 +12,11 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 import com.example.mmi.DBUtility;
 import com.example.mmi.R;
-import org.json.JSONObject;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Iterator;
 
 public class AttendanceDetailActivity extends AppCompatActivity {
 
-    private HashMap<String, HashMap<String, String>> attendanceMap = new HashMap<>();
-    private HashMap<String,String> studentMap = new HashMap<>();
     private String classDate;
     private String classID;
     private String id;
@@ -114,44 +108,13 @@ public class AttendanceDetailActivity extends AppCompatActivity {
                     String newPresent = params[1];
                     String newLate = params[2];
                     String updatedNotes = params[3];
-                    String attendanceList;
                     Statement st = con.createStatement();
-                    ResultSet rs = st.executeQuery("SELECT ATTENDANCELIST FROM mmi_classmeetings where CLASSDATE='" + classDate + "'");
                     try{
-                        while(rs.next()) {
-                            attendanceList = rs.getString("ATTENDANCELIST");
-                            JSONObject attendance = new JSONObject(attendanceList);
-                            Iterator<?> keys = attendance.keys();
-                            while(keys.hasNext())
-                            {
-                                HashMap<String, String> values = new HashMap<>();
-                                String key = (String)keys.next();
-                                JSONObject inner = new JSONObject(attendance.getString(key));
-                                Iterator<?>keys2 = inner.keys();
-                                while(keys2.hasNext())
-                                {
-                                    String key2 = (String)keys2.next();
-                                    String value = inner.getString(key2);
-                                    values.put(key2,value);
-                                }
-                                attendanceMap.put(key, values);
-                            }
-                        }
 
-                        if(!(newPresent.equals("False")&&newLate.equals("True"))) {
-                            attendanceMap.get(id).replace("present", newPresent);
-                            attendanceMap.get(id).replace("late", newLate);
-                            attendanceMap.get(id).replace("note", newNotes.getText().toString().trim());
-
-
-
-                            JSONObject jsonMap = new JSONObject(attendanceMap);
-                            //st.executeUpdate("UPDATE mmi_classmeetings" + " set ATTENDANCELIST='" + jsonMap + "' where CLASSDATE='" + classDate + "'");
-
+                        if(!(newPresent.equals("False")&&newLate.equals("True")))
+                        {
                             st.executeUpdate("UPDATE mmi_classmeetings set ATTENDANCELIST= JSON_SET(ATTENDANCELIST, '$."+'"'+id+'"'+".present', "+newPresent+") where CLASSDATE='"+classDate+"'");
-
                             st.executeUpdate("UPDATE mmi_classmeetings set ATTENDANCELIST= JSON_SET(ATTENDANCELIST, '$."+'"'+id+'"'+".late', "+newLate+") where CLASSDATE='"+classDate+"'");
-
                             st.executeUpdate("UPDATE mmi_classmeetings set ATTENDANCELIST= JSON_SET(ATTENDANCELIST, '$."+'"'+id+'"'+".note', "+'"'+updatedNotes+'"'+") where CLASSDATE='"+classDate+"'");
                         }
                         else {
@@ -189,5 +152,4 @@ public class AttendanceDetailActivity extends AppCompatActivity {
     interface OnTaskCompleteListener {
         void onTaskComplete(String message);
     }
-
 }

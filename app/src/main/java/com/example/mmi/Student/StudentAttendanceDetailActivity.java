@@ -132,7 +132,7 @@ public class StudentAttendanceDetailActivity extends AppCompatActivity {
 
                         present = attendanceMap.get(userId).get("present");
                         late = attendanceMap.get(userId).get("late");
-                        if(present.equals("True"))
+                        if(present.equals("true"))
                         {
                             presentText.setText("Yes");
                             presentText.setTextColor(Color.parseColor("#00ff00"));
