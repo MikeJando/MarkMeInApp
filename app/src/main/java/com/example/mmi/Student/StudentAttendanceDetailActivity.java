@@ -88,9 +88,12 @@ public class StudentAttendanceDetailActivity extends AppCompatActivity {
                     requestPermissions(REQUIRED_PERMISSIONS, REQUEST_CODE_REQUIRED_PERMISSIONS);
                 }
                 startDiscovery();
-                orderData.execute(cDate, connected);
+
             }
         });
+
+        orderData.execute(cDate, connected);
+
 
     }
 
@@ -123,11 +126,12 @@ public class StudentAttendanceDetailActivity extends AppCompatActivity {
                             }
                             attendanceMap.put(userId, values);
                         }
+                        String query = "JSON_SET(ATTENDANCELIST, '$."+'"'+userId+'"'+".present', true)";
 
-                        if(connect.equals("true") && attendanceMap.get(userId).get("present").equals("False")) {
-                            attendanceMap.get(userId).replace("present", "True");
-                            String jsonMap = "JSON_REPLACE(ATTENDANCELIST, '$."+userId+"', True" ;
-                            st.executeUpdate("UPDATE mmi_classmeetings" + " set ATTENDANCELIST='" + jsonMap + "' where CLASSDATE='" + classDate + "'");
+                        if(connect.equals("true"))
+                        {
+                            st.executeUpdate("UPDATE mmi_classmeetings set ATTENDANCELIST= "+query+" where CLASSDATE='"+classDate+"'");
+                            //toastMsg("Attendance has been recorded.");
                         }
 
                         present = attendanceMap.get(userId).get("present");
@@ -167,7 +171,12 @@ public class StudentAttendanceDetailActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String[] msg)
         {
-
+            if(connected.equals("true")) {
+                finish();
+                overridePendingTransition(0, 0);
+                startActivity(getIntent());
+                overridePendingTransition(0, 0);
+            }
         }
     }
 
@@ -204,12 +213,15 @@ public class StudentAttendanceDetailActivity extends AppCompatActivity {
 
     private final ConnectionLifecycleCallback connectionLifecycleCallback =
             new ConnectionLifecycleCallback() {
+                SyncData orderData = new SyncData();
                 @Override
                 public void onConnectionInitiated(String endpointId, ConnectionInfo connectionInfo) {
                     Log.i(TAG, "onConnectionInitiated: accepting connection");
                     connectionsClient.acceptConnection(endpointId, payloadCallback);
                     connectionsClient.stopDiscovery();
                     connected = "true";
+                    connectionsClient.disconnectFromEndpoint(endpointId);
+                    orderData.execute(cDate, connected);
                 }
 
                 @Override
@@ -222,7 +234,6 @@ public class StudentAttendanceDetailActivity extends AppCompatActivity {
                             toastMsg("The connection was rejected by one or both sides.");
                             break;
                         case ConnectionsStatusCodes.STATUS_ERROR:
-                            toastMsg("The connection broke before it was able to be accepted.");
                             break;
                         default:
                     }
