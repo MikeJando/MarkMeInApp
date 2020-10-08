@@ -35,8 +35,10 @@ import org.json.JSONObject;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Iterator;
+
 
 public class StudentAttendanceDetailActivity extends AppCompatActivity {
 
@@ -50,6 +52,7 @@ public class StudentAttendanceDetailActivity extends AppCompatActivity {
     private ConnectionsClient connectionsClient;
     private static final String TAG = "MMI";
     private String connected = "false";
+
 
     private static final String[] REQUIRED_PERMISSIONS =
             new String[] {
@@ -87,8 +90,16 @@ public class StudentAttendanceDetailActivity extends AppCompatActivity {
                 if (!hasPermissions(StudentAttendanceDetailActivity.this, REQUIRED_PERMISSIONS)) {
                     requestPermissions(REQUIRED_PERMISSIONS, REQUEST_CODE_REQUIRED_PERMISSIONS);
                 }
-                startDiscovery();
 
+                LocalDate today = LocalDate.now();
+                LocalDate classDate = LocalDate.parse(cDate);
+                if(today.equals(classDate)) {
+                    startDiscovery();
+                }
+                else
+                {
+                    toastMsg("You can only sign in for today's class!");
+                }
             }
         });
 
@@ -131,7 +142,6 @@ public class StudentAttendanceDetailActivity extends AppCompatActivity {
                         if(connect.equals("true"))
                         {
                             st.executeUpdate("UPDATE mmi_classmeetings set ATTENDANCELIST= "+query+" where CLASSDATE='"+classDate+"'");
-                            //toastMsg("Attendance has been recorded.");
                         }
 
                         present = attendanceMap.get(userId).get("present");

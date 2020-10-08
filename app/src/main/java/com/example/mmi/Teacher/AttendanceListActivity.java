@@ -4,7 +4,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -43,6 +42,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class AttendanceListActivity extends AppCompatActivity {
 
@@ -53,6 +54,7 @@ public class AttendanceListActivity extends AppCompatActivity {
     private AttendanceListActivity.MyAppAdapter myAppAdapter;
     private String cDate;
     private String cID;
+    private Timer timer = new Timer("Timer");
 
     private ConnectionsClient connectionsClient;
     private static final String TAG = "MMI";
@@ -99,6 +101,8 @@ public class AttendanceListActivity extends AppCompatActivity {
                 }
                 toastMsg("Taking Attendance");
                 startAdvertising();
+                long delay = 300000;
+                timer.schedule(task,delay);
             }
         });
 
@@ -349,4 +353,20 @@ public class AttendanceListActivity extends AppCompatActivity {
         Toast toast = Toast.makeText(this, msg, Toast.LENGTH_LONG);
         toast.show();
     }
+
+    TimerTask task = new TimerTask() {
+        public void run() {
+            connectionsClient.stopAdvertising();
+            connectionsClient.stopAllEndpoints();
+
+            Thread thread = new Thread(){
+                public void run(){
+                    runOnUiThread(() -> {
+                        toastMsg("No Longer Taking Attendance");
+                    });
+                }
+            };
+            thread.start();
+        }
+    };
 }
