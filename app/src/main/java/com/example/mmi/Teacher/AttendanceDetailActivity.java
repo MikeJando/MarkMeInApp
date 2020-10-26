@@ -138,11 +138,12 @@ public class AttendanceDetailActivity extends AppCompatActivity {
         protected void onPostExecute(String[] msg)
         {
             if(presentLate) {
-                setResult(RESULT_OK);
+                setResult(RESULT_OK, null);
                 finish();
             }
             else{
                 listener.onTaskComplete("Late cannot be True if Present is False");
+                setResult(RESULT_OK, null);
                 finish();
                 overridePendingTransition(0, 0);
                 startActivity(getIntent());

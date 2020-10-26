@@ -204,7 +204,7 @@ public class AttendanceListActivity extends AppCompatActivity {
                             attendanceDetailIntent.putExtra("present",itemArrayList.get(position).getPresent());
                             attendanceDetailIntent.putExtra("cDate", cDate);
                             attendanceDetailIntent.putExtra("cID", cID);
-                            startActivity(attendanceDetailIntent);
+                            startActivityForResult(attendanceDetailIntent, 1);
                         }
 
                     });
@@ -213,6 +213,17 @@ public class AttendanceListActivity extends AppCompatActivity {
                 {
                 }
             }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode==RESULT_OK){
+            finish();
+            overridePendingTransition(0, 0);
+            startActivity(getIntent());
+            overridePendingTransition(0, 0);
         }
     }
 
