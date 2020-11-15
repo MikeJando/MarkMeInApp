@@ -29,11 +29,12 @@ public class MainActivity extends AppCompatActivity {
         mTextUsername = (EditText) findViewById(R.id.edittext_username);
         mTextPassword = (EditText) findViewById(R.id.edittext_password);
         mButtonLogin = (Button) findViewById(R.id.button_login);
-        mTextViewForgot = (TextView) findViewById(R.id.textview_forgot);
+        /*mTextViewForgot = (TextView) findViewById(R.id.textview_forgot);
         mTextViewForgot.setOnClickListener(view -> {
             Intent forgotIntent = new Intent (MainActivity.this,ForgotActivity.class);
             startActivity(forgotIntent);
         });
+        */
 
         OnTaskCompleteListener listener = message -> Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
 
@@ -103,12 +104,12 @@ private class MyTask extends AsyncTask<String, Void, String[]>
             }
             else
             {
-                listener.onTaskComplete("Login Error");
+                listener.onTaskComplete("Invalid Username or Password.");
             }
         }
         else
         {
-            listener.onTaskComplete("Login Error");
+            listener.onTaskComplete("Invalid Username or Password");
         }
     }
 }

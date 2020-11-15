@@ -33,13 +33,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"/>
-    <TextView
+
+    <!--TextView
         android:id="@+id/textview_forgot"
         android:layout_width="wrap_content"
         android:layout_height="35dp"
         android:layout_marginTop="10dp"
         android:textColor=" #0000EE"
-        android:text="@string/forgot"/>
-
+        android:text="@string/forgot"/-->
 
 </LinearLayout>

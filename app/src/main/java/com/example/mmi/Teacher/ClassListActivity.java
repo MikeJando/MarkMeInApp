@@ -31,9 +31,11 @@ public class ClassListActivity extends AppCompatActivity
     private MyAppAdapter myAppAdapter;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_teacher);
+
 
         listView = findViewById(R.id.listView);
         itemArrayList = new ArrayList<Classes>();
